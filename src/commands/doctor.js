@@ -19,6 +19,13 @@ export function newestDecision(siteMd) {
   return dates.at(-1) ?? null;
 }
 
+export function decisionAge(date, now) {
+  const days = Math.floor((now - new Date(`${date}T00:00:00Z`)) / 86400000);
+  if (days < 0) return "in the future";
+  if (days === 0) return "today";
+  return days === 1 ? "1 day ago" : `${days} days ago`;
+}
+
 const git = (root, args) => spawnSync("git", args, { cwd: root, encoding: "utf8" });
 
 export async function runDoctor({ root, checkLatest = true, now = new Date() }) {
@@ -106,8 +113,8 @@ export async function runDoctor({ root, checkLatest = true, now = new Date() }) 
     const newest = newestDecision(readFileSync(siteMd, "utf8"));
     if (!newest) add("WARN", "SITE.md has no dated decisions yet");
     else {
-      const days = Math.round((now - new Date(`${newest}T00:00:00Z`)) / 86400000);
-      add(days > 180 ? "WARN" : "OK", `SITE.md: newest decision ${newest} (${days} days ago)${days > 180 ? "; check it's still current" : ""}`);
+      const days = Math.floor((now - new Date(`${newest}T00:00:00Z`)) / 86400000);
+      add(days > 180 || days < 0 ? "WARN" : "OK", `SITE.md: newest decision ${newest} (${decisionAge(newest, now)})${days > 180 ? "; check it's still current" : ""}`);
     }
   }
 

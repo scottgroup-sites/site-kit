@@ -17,7 +17,7 @@ test("public files describe roles, never people or skills", () => {
 
 test("settings template protects the right files and runs the hook", () => {
   const s = JSON.parse(readFileSync(join(KIT_ROOT, "templates", "settings.json"), "utf8").replaceAll("{{productionBranch}}", "main"));
-  for (const rule of ["Edit(/tests/**)", "Edit(/site-kit.config.js)", "Edit(/CLAUDE.md)", "Edit(/.claude/**)", "Edit(/.github/**)", "Edit(/.gitattributes)", "Edit(/src/_headers)", "Edit(/eleventy.config.js)", "Edit(/package.json)", "Edit(/package-lock.json)", "Bash(git push origin main*)", "Bash(git push -f*)", "Bash(git push --force*)", "Bash(git reset --hard*)"]) {
+  for (const rule of ["Edit(/tests/**)", "Edit(/site-kit.config.js)", "Edit(/CLAUDE.md)", "Edit(/.claude/**)", "Edit(/.github/**)", "Edit(/.gitattributes)", "Edit(/src/_headers)", "Edit(/eleventy.config.js)", "Edit(/eleventy.config.mjs)", "Edit(/eleventy.config.cjs)", "Edit(/.eleventy.js)", "Edit(/package.json)", "Edit(/package-lock.json)", "Bash(git push origin main*)", "Bash(git push -f*)", "Bash(git push --force*)", "Bash(git reset --hard*)"]) {
     assert.ok(s.permissions.deny.includes(rule), rule);
   }
   assert.equal(s.hooks.Stop[0].hooks[0].command, 'node "$CLAUDE_PROJECT_DIR/node_modules/site-kit/bin/site-kit.mjs" hook');

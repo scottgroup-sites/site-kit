@@ -3,7 +3,7 @@ import assert from "node:assert/strict";
 import { execFileSync } from "node:child_process";
 import { writeFileSync } from "node:fs";
 import { join } from "node:path";
-import { runDoctor, compareVersions, newestDecision } from "../src/commands/doctor.js";
+import { runDoctor, compareVersions, newestDecision, decisionAge } from "../src/commands/doctor.js";
 import { syncFiles } from "../src/commands/sync.js";
 import { loadConfig } from "../src/config.js";
 import { copyDemo } from "./helpers.js";
@@ -13,6 +13,14 @@ test("compareVersions and newestDecision", () => {
   assert.equal(compareVersions("2.0.0", "2.0.0"), 0);
   assert.equal(newestDecision("## Decisions\n\n- 2026-01-05: A\n- 2026-03-01: B\n- YYYY-MM-DD: template\n"), "2026-03-01");
   assert.equal(newestDecision("# nothing"), null);
+});
+
+test("decisionAge reads naturally", () => {
+  const now = new Date("2026-11-11T15:00:00Z");
+  assert.equal(decisionAge("2026-11-11", now), "today");
+  assert.equal(decisionAge("2026-11-10", now), "1 day ago");
+  assert.equal(decisionAge("2026-11-01", now), "10 days ago");
+  assert.equal(decisionAge("2026-12-01", now), "in the future");
 });
 
 test("doctor reports a healthy synced site", async () => {

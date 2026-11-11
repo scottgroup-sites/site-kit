@@ -59,7 +59,6 @@ export function validateConfig(raw) {
   if (!Array.isArray(allowedHosts)) problems.push("allowedHosts must be a list.");
   else allowedHosts.forEach((h, i) => {
     if (typeof h?.host !== "string" || !/^[a-z0-9.-]+$/i.test(h.host)) problems.push(`allowedHosts[${i}].host must be a host name like "cdn.example.org" (no https://).`);
-    else h.host = h.host.toLowerCase();
     if (!Array.isArray(h?.types) || !h.types.length || !h.types.every((t) => HOST_TYPES.includes(t))) problems.push(`allowedHosts[${i}].types must list one or more of: ${HOST_TYPES.join(", ")}.`);
     if (!hasReason(h)) problems.push(`allowedHosts[${i}].reason must say why this service is approved.`);
   });
@@ -107,7 +106,7 @@ export function validateConfig(raw) {
       flags: { production },
       footer,
       fonts,
-      allowedHosts,
+      allowedHosts: allowedHosts.map((h) => ({ ...h, host: h.host.toLowerCase() })),
       budgets,
       budgetLabels,
       sitemap: { exclude },
