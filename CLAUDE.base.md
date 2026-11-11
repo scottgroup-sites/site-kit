@@ -42,8 +42,9 @@ Unconfirmed or placeholder content is wrapped in a flag until someone with autho
 `{% flag "CONFIRM", "What needs checking" %}the text{% endflag %}`. Types: `CONFIRM` (needs checking),
 `NEW` (new copy to approve), `MADE UP` (a stand-in detail), `STOCK` (generic image or text). A missing
 photo is `{% photo "What the photo should show", "4/3" %}` (ratios: 1/1, 4/3, 3/2, 16/9, 21/9, 3/4,
-2/3, 4/5). Flags are highlighted in local previews, hidden on preview deployments, and listed in
-`CONTENT-REVIEW.md` (`npx --no site-kit review`). Never remove a flag without knowing who confirmed it.
+2/3, 4/5). Flags are highlighted in local previews (hover, tab to or tap a flag to read its note),
+hidden on preview deployments, and listed in `CONTENT-REVIEW.md` (`npx --no site-kit review`). Never remove a
+flag without knowing who confirmed it.
 
 ## How sites are built
 
@@ -52,8 +53,10 @@ photo is `{% photo "What the photo should show", "4/3" %}` (ratios: 1/1, 4/3, 3/
 - Shared facts (phone, address, menu) live in the site's data files; never hard-code them in a page.
 - One `h1` per page; headings in order without skipping levels.
 - Use the design tokens and existing classes; no one-off colours or inline styles.
-- Photos: `npx --no site-kit add-photo "<file>" <name>`, then use the `<img>` tag it prints and write
-  accurate alt text. Images below the first screen keep `loading="lazy"`.
+- Photos: first confirm the content editor has the right to use the photo (taken by or for the client, or
+  licensed), and, on care sites, consent from anyone recognisable. Then run
+  `npx --no site-kit add-photo "<file>" <name>`, use the `<img>` tag it prints and write accurate alt
+  text. Images below the first screen keep `loading="lazy"`.
 - If a change adds video, audio, a form, a map or third-party content, update the site's
   accessibility page in the same change.
 
@@ -78,6 +81,9 @@ developer to review. Share the preview deployment link it gives you.
 
 Third-party services, analytics, forms and email, hosting and domains, packages, the site-kit
 version, tests, `site-kit.config.js`, and the protected files listed in `.claude/settings.json`.
+
+Packages are installed or upgraded with npm 10 (`npx -y -p npm@10.9.9 npm install …`); npm 11 writes
+lockfiles that fail to install on Linux hosts.
 
 ## Cross-platform
 

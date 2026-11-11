@@ -32,3 +32,13 @@ test("workflow template runs on Ubuntu and Windows with named checks", () => {
   assert.match(yml, /Stop hook blocks a broken change/);
   assert.match(yml, /test "\$code" -eq 2/);
 });
+
+test("guidance covers photo rights, npm 10 and real preview links", () => {
+  const base = readFileSync(join(KIT_ROOT, "CLAUDE.base.md"), "utf8");
+  assert.match(base, /right to use/);
+  assert.match(base, /npm@10/);
+  const skill = readFileSync(join(KIT_ROOT, "templates", "skills", "send-for-review", "SKILL.md"), "utf8");
+  assert.match(skill, /gh pr view --comments/);
+  assert.match(skill, /dash\.cloudflare\.com/);
+  assert.match(skill, /gh pr checks --watch/);
+});
