@@ -4,7 +4,7 @@ import { execFileSync } from "node:child_process";
 import { writeFileSync } from "node:fs";
 import { join } from "node:path";
 import { runDoctor, compareVersions, newestDecision, decisionAge } from "../src/commands/doctor.js";
-import { syncFiles } from "../src/commands/sync.js";
+import { syncFiles, KIT_VERSION } from "../src/commands/sync.js";
 import { loadConfig } from "../src/config.js";
 import { copyDemo } from "./helpers.js";
 
@@ -32,7 +32,7 @@ test("doctor reports a healthy synced site", async () => {
   const { lines, code } = await runDoctor({ root, checkLatest: false, now: new Date("2026-11-10") });
   const text = lines.map((l) => `${l.level} ${l.text}`).join("\n");
   assert.equal(code, 0, text);
-  assert.match(text, /^OK +site-kit 1\.0\.0/m);
+  assert.match(text, new RegExp(`^OK +site-kit ${KIT_VERSION.replace(/\./g, "\\.")}`, "m"));
   assert.match(text, /^OK +Managed files are up to date/m);
   assert.match(text, /^OK +✔ All checks passed on 6 pages/m);
   assert.match(text, /^WARN +2 open review items/m);
