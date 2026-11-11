@@ -18,13 +18,10 @@ test("renderFlag shows text with a data attribute and a hidden-from-screen-reade
   );
 });
 
-test("hidden flags carry no tab stop or note", () => {
+test("renderFlag in hide mode returns the text alone, with no markup, tab stop or note", () => {
   const html = renderFlag("eight residents", "CONFIRM", "How many?", { mode: "hide" });
   assert.equal(html, "eight residents");
-});
-
-test("renderFlag in hide mode returns the text alone", () => {
-  assert.equal(renderFlag("eight residents", "CONFIRM", "How many?", { mode: "hide" }), "eight residents");
+  for (const bad of ["tabindex", "site-kit-flag", "⚑"]) assert.ok(!html.includes(bad), `hidden output contains ${bad}`);
 });
 
 test("renderFlag escapes notes and rejects bad input", () => {

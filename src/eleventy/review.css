@@ -11,6 +11,13 @@
 }
 .site-kit-flag:hover > .site-kit-flag__note,
 .site-kit-flag:focus > .site-kit-flag__note { display: block; }
+/* Phones and touch screens: a strip fixed to the bottom of the screen, so it never overflows or clips. */
+@media (max-width: 640px), (hover: none) {
+  .site-kit-flag__note {
+    position: fixed; left: 1rem; right: 1rem; bottom: 1rem; top: auto;
+    width: auto; max-width: none;
+  }
+}
 .site-kit-photo { display: grid; place-items: center; gap: 0.5rem; width: 100%; padding: 1rem; border: 2px dashed #8a6d00; border-radius: 1rem; background: #fffbe0; color: #5c4700; text-align: center; }
 .site-kit-photo--clean { border: 0; background: #ece7df; color: #5f574c; }
 .site-kit-photo__label { max-width: 30ch; font-weight: 700; }
