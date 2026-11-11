@@ -7,6 +7,7 @@ import { serveSite } from "../src/runner/serve.js";
 import { launchBrowser } from "../src/runner/browser.js";
 import { copyDemo } from "./helpers.js";
 
+const PHONE = { width: 375, height: 812 };
 let build, server, browser;
 before(async () => {
   const dir = copyDemo("tooltip");
@@ -39,7 +40,7 @@ test("flag notes stay out of the text flow until hovered, focused or tapped", as
 });
 
 test("a tap shows the note on touch screens", async () => {
-  const context = await browser.newContext({ viewport: { width: 375, height: 812 }, hasTouch: true, isMobile: true });
+  const context = await browser.newContext({ viewport: PHONE, hasTouch: true, isMobile: true });
   const page = await context.newPage();
   await page.goto(`${server.url}/about/`);
   await page.tap(".site-kit-flag");
@@ -61,7 +62,7 @@ test("the note sits above the text, not inside the line", async () => {
 });
 
 test("on a phone the note is a strip inside the screen, even for a flag on the right", async () => {
-  const context = await browser.newContext({ viewport: { width: 375, height: 812 }, hasTouch: true, isMobile: true });
+  const context = await browser.newContext({ viewport: PHONE, hasTouch: true, isMobile: true });
   const page = await context.newPage();
   await page.goto(`${server.url}/about/`);
   const flag = page.locator(".site-kit-flag").last();
@@ -70,10 +71,10 @@ test("on a phone the note is a strip inside the screen, even for a flag on the r
   await flag.tap();
   const m = await page.evaluate(() => {
     const r = [...document.querySelectorAll(".site-kit-flag__note")].find((n) => getComputedStyle(n).display !== "none").getBoundingClientRect();
-    return { left: r.left, right: r.right, top: r.top, bottom: r.bottom, w: window.innerWidth, h: window.innerHeight, scrollW: document.documentElement.scrollWidth };
+    return { left: r.left, right: r.right, top: r.top, bottom: r.bottom, scrollW: document.documentElement.scrollWidth };
   });
-  assert.ok(m.left >= 0 && m.right <= m.w, `note ${m.left}..${m.right} within 0..${m.w}`);
-  assert.ok(m.top >= 0 && m.bottom <= m.h, `note ${m.top}..${m.bottom} within 0..${m.h}`);
-  assert.ok(m.scrollW <= m.w, `page scrollWidth ${m.scrollW} should not exceed ${m.w}`);
+  assert.ok(m.left >= 0 && m.right <= PHONE.width, `note ${m.left}..${m.right} within 0..${PHONE.width}`);
+  assert.ok(m.top >= 0 && m.bottom <= PHONE.height, `note ${m.top}..${m.bottom} within 0..${PHONE.height}`);
+  assert.ok(m.scrollW <= PHONE.width, `page scrollWidth ${m.scrollW} should not exceed ${PHONE.width}`);
   await context.close();
 });
