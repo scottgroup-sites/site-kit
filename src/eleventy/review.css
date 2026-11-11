@@ -1,0 +1,14 @@
+/* site-kit: content-review flags and photo placeholders */
+.site-kit-flag { background: #fff3a3; box-shadow: 0 0 0 2px #fff3a3; border-bottom: 2px solid #8a6d00; }
+.site-kit-flag__note { display: inline-block; margin-left: 0.35em; padding: 0 0.4em; border-radius: 0.3em; background: #5c4700; color: #ffffff; font-size: 0.875rem; font-weight: 600; }
+.site-kit-photo { display: grid; place-items: center; gap: 0.5rem; width: 100%; padding: 1rem; border: 2px dashed #8a6d00; border-radius: 1rem; background: #fffbe0; color: #5c4700; text-align: center; }
+.site-kit-photo--clean { border: 0; background: #ece7df; color: #5f574c; }
+.site-kit-photo__label { max-width: 30ch; font-weight: 700; }
+.site-kit-photo--1x1 { aspect-ratio: 1 / 1; }
+.site-kit-photo--4x3 { aspect-ratio: 4 / 3; }
+.site-kit-photo--3x2 { aspect-ratio: 3 / 2; }
+.site-kit-photo--16x9 { aspect-ratio: 16 / 9; }
+.site-kit-photo--21x9 { aspect-ratio: 21 / 9; }
+.site-kit-photo--3x4 { aspect-ratio: 3 / 4; }
+.site-kit-photo--2x3 { aspect-ratio: 2 / 3; }
+.site-kit-photo--4x5 { aspect-ratio: 4 / 5; }

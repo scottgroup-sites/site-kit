@@ -1,0 +1,5 @@
+node_modules/
+.tmp/
+fixtures/**/_site/
+fixtures/**/CONTENT-REVIEW.md
+.DS_Store

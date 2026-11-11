@@ -1,0 +1,45 @@
+{
+  "name": "site-kit",
+  "version": "1.0.0",
+  "description": "Checks, content-review flags and Claude Code rules for Eleventy marketing sites",
+  "license": "MIT",
+  "type": "module",
+  "files": [
+    "bin",
+    "src",
+    "templates",
+    "CLAUDE.base.md",
+    "CLAUDE.care.md"
+  ],
+  "engines": {
+    "node": ">=22"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/scottgroup-sites/site-kit.git"
+  },
+  "bin": {
+    "site-kit": "bin/site-kit.mjs"
+  },
+  "exports": {
+    ".": "./src/index.js",
+    "./eleventy": "./src/eleventy/plugin.js",
+    "./package.json": "./package.json"
+  },
+  "scripts": {
+    "test": "node --test \"test/**/*.test.js\""
+  },
+  "peerDependencies": {
+    "@11ty/eleventy": "^3.1.0"
+  },
+  "dependencies": {
+    "@axe-core/playwright": "4.14.0",
+    "html-validate": "11.18.0",
+    "linkedom": "0.18.15",
+    "playwright-core": "1.65.0",
+    "sharp": "0.35.5"
+  },
+  "devDependencies": {
+    "@11ty/eleventy": "3.1.8"
+  }
+}

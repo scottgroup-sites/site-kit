@@ -1,0 +1,18 @@
+---
+layout: base.njk
+title: Contact us — Example Care Home
+description: Call or write to Example Care Home to arrange a visit, ask a question or talk about care for a loved one.
+---
+<h1>Contact us</h1>
+<p>Call <a href="tel:+15550100100">(555) 010-0100</a> or send us a message.</p>
+<form action="/contact/" method="get">
+  <p>
+    <label for="name">Your name</label>
+    <input id="name" name="name" type="text" autocomplete="name" required>
+  </p>
+  <p>
+    <label for="message">Message</label>
+    <textarea id="message" name="message" rows="4"></textarea>
+  </p>
+  <p><button type="submit">Send message</button></p>
+</form>

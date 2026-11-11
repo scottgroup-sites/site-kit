@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>{{ title }}</title>
+  <meta name="description" content="{{ description }}">
+  {% if noindex %}<meta name="robots" content="noindex">{% else %}<link rel="canonical" href="https://www.example.com{{ page.url }}">{% endif %}
+  <link rel="stylesheet" href="/assets/css/styles.css">
+</head>
+<body>
+  <a class="skip-link" href="#main">Skip to main content</a>
+  <header class="site-header">
+    <a class="brand" href="/"><img src="/assets/img/logo.svg" width="160" height="40" alt="Example Care Home"></a>
+    <nav aria-label="Main">
+      <ul>
+        <li><a href="/"{% if page.url == "/" %} aria-current="page"{% endif %}>Home</a></li>
+        <li><a href="/about/"{% if page.url == "/about/" %} aria-current="page"{% endif %}>About</a></li>
+        <li><a href="/contact/"{% if page.url == "/contact/" %} aria-current="page"{% endif %}>Contact</a></li>
+      </ul>
+    </nav>
+  </header>
+  <main id="main">
+    {{ content | safe }}
+  </main>
+  <footer class="site-footer">
+    <p>Example Care Home, 100 Example Street, Springfield</p>
+    <p><a href="tel:+15550100100">(555) 010-0100</a></p>
+    <p><a href="/accessibility/">Accessibility</a> · <a href="/privacy/">Privacy</a></p>
+  </footer>
+</body>
+</html>

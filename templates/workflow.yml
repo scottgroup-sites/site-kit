@@ -1,0 +1,39 @@
+name: site-kit
+
+on:
+  pull_request:
+  push:
+    branches: [{{productionBranch}}]
+
+permissions:
+  contents: read
+
+jobs:
+  site-kit:
+    # Linux matches the hosting build; Windows matches editors' PCs.
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, windows-latest]
+    name: site-kit (${{ matrix.os }})
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-node@v5
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - run: node node_modules/site-kit/bin/site-kit.mjs sync --check
+      - run: node node_modules/site-kit/bin/site-kit.mjs test
+      - name: Stop hook blocks a broken change
+        shell: bash
+        run: |
+          printf '\n<p><a href="/site-kit-hook-check-missing/">x</a></p>\n' >> "$(git ls-files 'src/*.njk' 'src/**/*.njk' | head -n 1)"
+          set +e
+          echo '{"stop_hook_active":false}' | node node_modules/site-kit/bin/site-kit.mjs hook
+          code=$?
+          set -e
+          git checkout -- src
+          test "$code" -eq 2
