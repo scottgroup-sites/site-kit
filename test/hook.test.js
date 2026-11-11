@@ -41,6 +41,8 @@ test("blocks with an explanation when the checks themselves can't run", async ()
     const r = await runHook({ root, stdin: '{"stop_hook_active":false}' });
     assert.equal(r.code, 2);
     assert.match(r.message, /couldn't run/);
+    assert.doesNotMatch(r.message, /Fix the content/);
+    assert.match(r.message, /ask a developer/);
   } finally {
     if (before === undefined) delete process.env.PW_CHANNEL; else process.env.PW_CHANNEL = before;
   }

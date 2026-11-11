@@ -15,6 +15,9 @@ description: Send website changes for developer review - run the checks, commit,
 6. If there's no pull request for this branch (`gh pr view` fails), open one with
    `gh pr create --base {{productionBranch}}`, listing the changes and any new flags that need
    confirming. Otherwise the push updates the existing one.
-7. Wait for the checks (`gh pr checks`), then share the preview deployment link from the hosting
-   check, and the pull request link, noting that a developer reviews it before it goes live.
+7. Wait for the checks with `gh pr checks --watch`. Then find the preview link: the hosting
+   provider comments it on the pull request (`gh pr view --comments`; on Cloudflare Pages it's the
+   "Branch Preview URL"). If there's no comment yet, build it from the preview-link pattern in
+   `SITE.md`. Never share a `dash.cloudflare.com` link: it needs a login. Share the preview link and
+   the pull request link, noting that a developer reviews it before it goes live.
 8. If a check fails, explain it plainly and fix it, or say it needs a developer.

@@ -1,6 +1,6 @@
 {
   "name": "site-kit",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Checks, content-review flags and Claude Code rules for Eleventy marketing sites",
   "license": "MIT",
   "type": "module",

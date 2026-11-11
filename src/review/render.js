@@ -20,7 +20,7 @@ export function renderFlag(content, type, note, { mode = "show" } = {}) {
   if (mode === "hide") return String(content);
   const t = escapeHtml(type);
   const n = escapeHtml(note);
-  return `<span class="site-kit-flag" data-flag="${t}" data-flag-note="${n}">${content}<span class="site-kit-flag__note" aria-hidden="true">⚑ ${t}: ${n}</span></span>`;
+  return `<span class="site-kit-flag" data-flag="${t}" data-flag-note="${n}" tabindex="0">${content}<span class="site-kit-flag__note" aria-hidden="true">⚑ ${t}: ${n}</span></span>`;
 }
 
 export function renderPhoto(description, aspect = "4/3", { mode = "show" } = {}) {

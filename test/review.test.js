@@ -14,12 +14,14 @@ test("flag types and photo aspects", () => {
 test("renderFlag shows text with a data attribute and a hidden-from-screen-readers note", () => {
   assert.equal(
     renderFlag("eight residents", "CONFIRM", "How many?"),
-    '<span class="site-kit-flag" data-flag="CONFIRM" data-flag-note="How many?">eight residents<span class="site-kit-flag__note" aria-hidden="true">⚑ CONFIRM: How many?</span></span>',
+    '<span class="site-kit-flag" data-flag="CONFIRM" data-flag-note="How many?" tabindex="0">eight residents<span class="site-kit-flag__note" aria-hidden="true">⚑ CONFIRM: How many?</span></span>',
   );
 });
 
-test("renderFlag in hide mode returns the text alone", () => {
-  assert.equal(renderFlag("eight residents", "CONFIRM", "How many?", { mode: "hide" }), "eight residents");
+test("renderFlag in hide mode returns the text alone, with no markup, tab stop or note", () => {
+  const html = renderFlag("eight residents", "CONFIRM", "How many?", { mode: "hide" });
+  assert.equal(html, "eight residents");
+  for (const bad of ["tabindex", "site-kit-flag", "⚑"]) assert.ok(!html.includes(bad), `hidden output contains ${bad}`);
 });
 
 test("renderFlag escapes notes and rejects bad input", () => {

@@ -12,6 +12,13 @@ test("allowedHosts hosts are lower-cased", () => {
   assert.equal(config.allowedHosts[0].host, "cdn.example.org");
 });
 
+test("validateConfig doesn't change the object it was given", () => {
+  const raw = { site: { url: "https://www.example.com" }, allowedHosts: [{ host: "CDN.Example.org", types: ["script"], reason: "Test" }] };
+  const { config } = validateConfig(raw);
+  assert.equal(config.allowedHosts[0].host, "cdn.example.org");
+  assert.equal(raw.allowedHosts[0].host, "CDN.Example.org");
+});
+
 test("parseSize reads KB and MB", () => {
   assert.equal(parseSize("60 KB"), 60 * 1024);
   assert.equal(parseSize("1.5 MB"), 1.5 * 1024 * 1024);

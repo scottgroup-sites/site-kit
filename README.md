@@ -9,7 +9,7 @@ hasn't been touched for months quick to pick up again.
 In an Eleventy 3 site, with npm 10:
 
 ```bash
-npx -y -p npm@10.9.9 npm install --save-dev github:scottgroup-sites/site-kit#v1.0.0
+npx -y -p npm@10.9.9 npm install --save-dev github:scottgroup-sites/site-kit#v1.0.1
 ```
 
 Add `"test": "site-kit test"` to the site's `package.json` scripts.
