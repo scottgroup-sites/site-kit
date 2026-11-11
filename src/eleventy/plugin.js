@@ -43,7 +43,7 @@ export default function siteKit(eleventyConfig, options = {}) {
 
   eleventyConfig.addTransform("site-kit-review-css", function (content) {
     const out = this.page?.outputPath;
-    if (typeof out !== "string" || !out.endsWith(".html") || content.includes(REVIEW_CSS_URL)) return content;
+    if (typeof out !== "string" || !out.endsWith(".html") || content.includes(REVIEW_CSS_URL) || !content.includes('class="site-kit-')) return content;
     return content.replace("</head>", `<link rel="stylesheet" href="${REVIEW_CSS_URL}">\n</head>`);
   });
 

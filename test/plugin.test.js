@@ -51,3 +51,20 @@ test("fail mode: placeholder facts still block launch when no flags remain", () 
   assert.match(r.output, /placeholder facts remain: email/);
   rmSync(r.outDir, { recursive: true, force: true });
 });
+
+test("the review stylesheet is linked only on pages with flags or photos", () => {
+  const root = copyDemo("plugin-css-scope");
+  const r = buildSite(root, { mode: "show" });
+  assert.ok(r.ok, r.output);
+  assert.match(readFileSync(join(r.outDir, "about", "index.html"), "utf8"), /assets\/site-kit\/review\.css/);
+  assert.doesNotMatch(readFileSync(join(r.outDir, "privacy", "index.html"), "utf8"), /assets\/site-kit\/review\.css/);
+  rmSync(r.outDir, { recursive: true, force: true });
+});
+
+test("hidden photo placeholders still get the stylesheet", () => {
+  const root = copyDemo("plugin-css-hide");
+  const r = buildSite(root, { mode: "hide" });
+  assert.ok(r.ok, r.output);
+  assert.match(readFileSync(join(r.outDir, "about", "index.html"), "utf8"), /assets\/site-kit\/review\.css/);
+  rmSync(r.outDir, { recursive: true, force: true });
+});
