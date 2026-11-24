@@ -9,5 +9,6 @@ import * as csp from "./csp.js";
 import * as readability from "./readability.js";
 import * as sitemap from "./sitemap.js";
 import * as sensitiveFields from "./sensitive-fields.js";
+import * as urls from "./urls.js";
 
-export const CHECKS = [a11y, html, links, structure, consistency, performance, hosts, csp, readability, sitemap, sensitiveFields];
+export const CHECKS = [a11y, html, links, structure, consistency, performance, hosts, csp, readability, sitemap, sensitiveFields, urls];

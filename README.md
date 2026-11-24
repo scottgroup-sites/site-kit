@@ -47,6 +47,16 @@ export default function (eleventyConfig) {
 
 Then run `npx --no site-kit sync` and commit the files it creates.
 
+The plugin removes comments from built stylesheets, so comments that explain the design don't count
+against the CSS budget (`/*! … */` licence comments stay). Pass `stripCssComments: false` to keep them.
+
+## Moving an existing site onto site-kit
+
+`site-kit init` records an existing static site (its URLs, outside services, forms, inline styles and
+images) and scaffolds Eleventy and site-kit around it; `migrate compare` lists old text the new pages
+are missing, and the `urls` check fails until every old URL has a page or a redirect. The whole process is
+in [MIGRATING.md](MIGRATING.md).
+
 ## Commands
 
 | Command | What it does |
@@ -56,11 +66,15 @@ Then run `npx --no site-kit sync` and commit the files it creates.
 | `npx --no site-kit add-photo "<file>" <name>` | Resize, compress and strip metadata from a photo; print its `<img>` tag |
 | `npx --no site-kit sync [--check]` | Update the files site-kit manages in the repo |
 | `npx --no site-kit doctor` | Report the site's status; run it first when returning to a site |
+| `site-kit init [--url …] [--care] [--port n] [--name …]` | Record an existing static site and scaffold Eleventy and site-kit (see MIGRATING.md) |
+| `npx --no site-kit migrate scan [--from dir]` | Write `MIGRATION.md` and `migration/old-urls.txt` from the old pages |
+| `npx --no site-kit migrate compare [--from dir]` | List old text missing from the new pages |
 
 ## Checks
 
 `a11y`, `html`, `links`, `structure`, `consistency`, `performance`, `hosts`, `csp`, `readability`,
-`sitemap`, `sensitive-fields`. See the design spec in `docs/superpowers/specs/` for what each enforces.
+`sitemap`, `sensitive-fields`, and `urls` (only with `migration.oldUrls` set: every old URL still has a
+page, a file or a redirect). See the design spec in `docs/superpowers/specs/` for what each enforces.
 Site-specific tests in the site's `tests/` folder run too, with helpers from `site-kit`:
 `builtPages`, `loadPage`, `fileForUrl`, `serveSite`, `launchBrowser`, `buildSite`.
 

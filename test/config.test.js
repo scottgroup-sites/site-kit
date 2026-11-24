@@ -80,8 +80,8 @@ test("html-validate changes and exceptions need reasons", () => {
   assert.equal(config.exceptions[0].check, "readability");
 });
 
-test("CHECK_IDS lists the eleven checks", () => {
-  assert.deepEqual(CHECK_IDS, ["a11y", "html", "links", "structure", "consistency", "performance", "hosts", "csp", "readability", "sitemap", "sensitive-fields"]);
+test("CHECK_IDS lists the twelve checks", () => {
+  assert.deepEqual(CHECK_IDS, ["a11y", "html", "links", "structure", "consistency", "performance", "hosts", "csp", "readability", "sitemap", "sensitive-fields", "urls"]);
 });
 
 test("unknown keys inside sections are rejected", () => {
@@ -134,4 +134,11 @@ test("loadConfig wraps a syntax error in the config file", async () => {
   } finally {
     rmSync(dir, { recursive: true, force: true });
   }
+});
+
+test("migration.oldUrls is optional and must be a path inside the repo", () => {
+  assert.equal(validateConfig(minimal).config.migration.oldUrls, null);
+  assert.equal(validateConfig({ ...minimal, migration: { oldUrls: "migration/old-urls.txt" } }).config.migration.oldUrls, "migration/old-urls.txt");
+  for (const bad of ["/etc/urls", "../urls.txt", "", 3]) assert.throws(() => validateConfig({ ...minimal, migration: { oldUrls: bad } }), /migration\.oldUrls must be a path/);
+  assert.throws(() => validateConfig({ ...minimal, migration: { urls: "x" } }), /Unknown setting "migration\.urls"/);
 });

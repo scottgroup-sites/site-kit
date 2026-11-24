@@ -4,7 +4,7 @@ import { readFileSync, readdirSync, statSync } from "node:fs";
 import { join } from "node:path";
 import { KIT_ROOT } from "./helpers.js";
 
-const files = ["CLAUDE.base.md", "CLAUDE.care.md", "README.md", "CHANGELOG.md", ...(function walk(dir) {
+const files = ["CLAUDE.base.md", "CLAUDE.care.md", "README.md", "CHANGELOG.md", "MIGRATING.md", ...(function walk(dir) {
   return readdirSync(join(KIT_ROOT, dir)).flatMap((n) => statSync(join(KIT_ROOT, dir, n)).isDirectory() ? walk(join(dir, n)) : [join(dir, n)]);
 })("templates")].filter((f) => { try { statSync(join(KIT_ROOT, f)); return true; } catch { return false; } });
 
