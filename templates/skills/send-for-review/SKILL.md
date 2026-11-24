@@ -10,7 +10,9 @@ description: Send website changes for developer review - run the checks, commit,
 2. Run `npx --no site-kit test`. If anything fails, fix the content (never the checks) and explain the fix
    in a sentence. Don't continue until everything passes.
 3. List the changes in plain English and confirm they're everything to send.
-4. Commit everything with a plain-English message summarising the changes.
+4. Commit the changes with a plain-English message summarising them. Never commit
+   `.claude/settings.json`: if `git status` shows it changed, that's a developer's temporary unlock, so
+   leave it out (`git restore --staged .claude/settings.json` if it was staged) and commit the rest.
 5. Push: `git push -u origin HEAD`.
 6. If there's no pull request for this branch (`gh pr view` fails), open one with
    `gh pr create --base {{productionBranch}}`, listing the changes and any new flags that need

@@ -46,6 +46,9 @@ photo is `{% photo "What the photo should show", "4/3" %}` (ratios: 1/1, 4/3, 3/
 hidden on preview deployments, and listed in `CONTENT-REVIEW.md` (`npx --no site-kit review`). Never remove a
 flag without knowing who confirmed it.
 
+A flag is inline text: put it inside a paragraph, list item or heading, never around a list, a `<div>`
+or another block. To flag a list, flag the text of each item. The build stops and says so otherwise.
+
 ## How sites are built
 
 - Pages are `src/<page>/index.njk` with a layout, a `title` and a unique `description` (50–160
@@ -53,6 +56,9 @@ flag without knowing who confirmed it.
 - Shared facts (phone, address, menu) live in the site's data files; never hard-code them in a page.
 - One `h1` per page; headings in order without skipping levels.
 - Use the design tokens and existing classes; no one-off colours or inline styles.
+- Body text, including small uppercase labels, is at least 16px as rendered. Many sites set the root
+  size above 100%, so work rem values out from the root: on a 112.5% root (18px), 0.85rem is 15.3px
+  and the smallest allowed body size is 0.889rem.
 - Photos: first confirm the content editor has the right to use the photo (taken by or for the client, or
   licensed), and, on care sites, consent from anyone recognisable. Then run
   `npx --no site-kit add-photo "<file>" <name>`, use the `<img>` tag it prints and write accurate alt
@@ -67,15 +73,23 @@ structure, consistency, performance, approved services, security headers, readab
 and sensitive form fields. New pages are covered automatically.
 
 - Run it before calling any change done. Everything must pass.
+- It builds into a temporary folder and removes it afterwards, so `_site` isn't what was checked. Read
+  the report it prints.
 - Never weaken, skip or edit tests, budgets, exceptions or protected files to make a check pass. If a
   check seems wrong, explain why and leave it for a developer.
 - When returning to a site after time away, run `npx --no site-kit doctor` first.
+- The site's own tests in `tests/` guard settled decisions (wording rules, facts, which page shows
+  what). If a test fails because content it checks was deliberately changed or removed, the test needs
+  a developer to update it in the same change; leave the content as asked and say so.
 
 ## Publishing
 
 Never commit to or push the production branch. Work on a branch named `content/<short-description>`,
 commit with a plain-English message, and use `/send-for-review` to open a pull request for a
 developer to review. Share the preview deployment link it gives you.
+
+Never commit `.claude/settings.json`. When it shows as changed, a developer has unlocked protected
+files for a while; leave that change out of every commit.
 
 ## Developer-only
 

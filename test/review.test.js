@@ -1,6 +1,7 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
 import { FLAG_TYPES, PHOTO_ASPECTS, renderFlag, renderPhoto } from "../src/review/render.js";
+import { stripCssComments } from "../src/eleventy/css.js";
 import { createReview, formatReview, assertLaunchReady, assertNoPlaceholders } from "../src/review/collect.js";
 import { flagMode } from "../src/review/mode.js";
 
@@ -28,6 +29,16 @@ test("renderFlag escapes notes and rejects bad input", () => {
   assert.match(renderFlag("x", "NEW", 'a <b> & "c"'), /data-flag-note="a &lt;b&gt; &amp; &quot;c&quot;"/);
   assert.throws(() => renderFlag("x", "MAYBE", "n"), /Unknown flag type "MAYBE"/);
   assert.throws(() => renderFlag("x", "NEW", ""), /needs a note/);
+});
+
+test("renderFlag refuses to wrap block elements, in every mode", () => {
+  for (const mode of ["show", "hide", "fail"]) {
+    assert.throws(() => renderFlag("<ul><li>Meals</li></ul>", "CONFIRM", "Rate includes?", { mode }), /wraps a <ul>.*inside each item/s);
+    assert.throws(() => renderFlag("\n<P>Two</P>", "NEW", "n", { mode }), /wraps a <p>/);
+    assert.throws(() => renderFlag('<div class="x">a</div>', "NEW", "n", { mode }), /wraps a <div>/);
+  }
+  assert.match(renderFlag("<strong>eight</strong> <a href=\"/p/\">residents</a>", "CONFIRM", "n"), /<strong>eight<\/strong>/);
+  assert.match(renderFlag("<picture></picture><span>x</span>", "STOCK", "n"), /<picture>/);
 });
 
 test("renderPhoto uses an aspect class, never an inline style", () => {
@@ -111,4 +122,12 @@ test("renderFlag and renderPhoto reject unknown modes; fail renders like show", 
   assert.throws(() => renderPhoto("x", "4/3", { mode: "maybe" }), /Unknown flag mode "maybe"/);
   assert.equal(renderFlag("x", "NEW", "n", { mode: "fail" }), renderFlag("x", "NEW", "n"));
   assert.equal(renderPhoto("x", "4/3", { mode: "fail" }), renderPhoto("x", "4/3"));
+});
+
+test("stripCssComments keeps rules, strings and licence comments", () => {
+  assert.equal(stripCssComments("/* a */\n.a { color: red; } /* b */\n\n\n.b{}\n"), ".a { color: red; }\n.b{}\n");
+  assert.equal(stripCssComments(".a::after { content: '/* x */'; }"), ".a::after { content: '/* x */'; }");
+  assert.equal(stripCssComments('.a { content: "\\"/*"; }'), '.a { content: "\\"/*"; }');
+  assert.equal(stripCssComments("/*! keep */\n.a{}"), "/*! keep */\n.a{}");
+  assert.equal(stripCssComments(".a{} /* unterminated"), ".a{}");
 });

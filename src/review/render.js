@@ -13,9 +13,19 @@ function checkMode(mode) {
 const CAMERA_SVG =
   '<svg class="site-kit-photo__icon" aria-hidden="true" focusable="false" width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M14.5 4h-5L7 7H4a2 2 0 0 0-2 2v9a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2h-3l-2.5-3z"/><circle cx="12" cy="13" r="3"/></svg>';
 
+// Block elements a flag's inline <span> can't contain. Flag the text inside each one instead.
+const BLOCK_TAG = /<(address|article|aside|blockquote|details|div|dl|dd|dt|fieldset|figcaption|figure|footer|form|h[1-6]|header|hr|li|main|nav|ol|p|pre|section|table|tbody|td|th|thead|tr|ul)\b/i;
+
 export function renderFlag(content, type, note, { mode = "show" } = {}) {
   if (!FLAG_TYPES.includes(type)) throw new Error(`Unknown flag type "${type}". Use one of: ${FLAG_TYPES.join(", ")}`);
   if (!note) throw new Error(`Flag "${type}" needs a note explaining what to check`);
+  const block = BLOCK_TAG.exec(String(content));
+  if (block) {
+    throw new Error(
+      `Flag "${type}" (${note}) wraps a <${block[1].toLowerCase()}>. A flag is inline text, so it goes inside a paragraph, list item or heading, never around one. ` +
+        "Put a flag inside each item instead, e.g. <li>{% flag … %}text{% endflag %}</li>.",
+    );
+  }
   checkMode(mode);
   if (mode === "hide") return String(content);
   const t = escapeHtml(type);
