@@ -1,0 +1,10 @@
+/* Design tokens: the site's colours, fonts and sizes. Use these, never one-off values. */
+:root { --text: #1f2933; --link: #1d3557; --background: #ffffff; }
+* { box-sizing: border-box; }
+body { margin: 0; font-family: system-ui, sans-serif; font-size: 1rem; line-height: 1.6; color: var(--text); background: var(--background); }
+a { color: var(--link); }
+img { max-width: 100%; height: auto; }
+.skip-link { position: absolute; left: -9999px; }
+.skip-link:focus { left: 1rem; top: 1rem; background: var(--background); padding: 0.5rem; }
+.site-header, main, .site-footer { max-width: 60rem; margin: 0 auto; padding: 1rem; }
+.site-header nav ul { display: flex; flex-wrap: wrap; gap: 1rem; list-style: none; padding: 0; }

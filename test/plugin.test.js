@@ -68,3 +68,25 @@ test("hidden photo placeholders still get the stylesheet", () => {
   assert.match(readFileSync(join(r.outDir, "about", "index.html"), "utf8"), /assets\/site-kit\/review\.css/);
   rmSync(r.outDir, { recursive: true, force: true });
 });
+
+test("built stylesheets lose their comments (licence comments and strings stay); opt out with stripCssComments: false", () => {
+  const root = copyDemo("plugin-css-comments");
+  const cssPath = join(root, "src", "assets", "css", "styles.css");
+  writeFileSync(cssPath, `/*! Font licence */\n/* 1. Colours */\n${readFileSync(cssPath, "utf8")}\n.q::before { content: "/* not a comment */"; }\n`);
+  const r = buildSite(root, { mode: "show" });
+  assert.ok(r.ok, r.output);
+  const built = readFileSync(join(r.outDir, "assets", "css", "styles.css"), "utf8");
+  assert.match(built, /\/\*! Font licence \*\//);
+  assert.doesNotMatch(built, /1\. Colours/);
+  assert.match(built, /content: "\/\* not a comment \*\/"/);
+  assert.match(built, /--navy: #1d3557/);
+  assert.doesNotMatch(readFileSync(join(r.outDir, "assets", "site-kit", "review.css"), "utf8"), /\/\*/);
+  rmSync(r.outDir, { recursive: true, force: true });
+
+  const configPath = join(root, "eleventy.config.js");
+  writeFileSync(configPath, readFileSync(configPath, "utf8").replace("placeholders: []", "placeholders: [], stripCssComments: false"));
+  const kept = buildSite(root, { mode: "show" });
+  assert.ok(kept.ok, kept.output);
+  assert.match(readFileSync(join(kept.outDir, "assets", "css", "styles.css"), "utf8"), /1\. Colours/);
+  rmSync(kept.outDir, { recursive: true, force: true });
+});

@@ -9,7 +9,8 @@
     "src",
     "templates",
     "CLAUDE.base.md",
-    "CLAUDE.care.md"
+    "CLAUDE.care.md",
+    "MIGRATING.md"
   ],
   "engines": {
     "node": ">=22"

@@ -1,5 +1,24 @@
 # Changelog
 
+## 1.1.0 (unreleased)
+
+- New: moving an existing static site onto site-kit. `site-kit init` records the old site and scaffolds
+  Eleventy and site-kit; `migrate scan` writes `MIGRATION.md` (outside services, fonts, forms, inline
+  styles, images, page structure) and `migration/old-urls.txt`; `migrate compare` lists old text missing
+  from the new pages. See `MIGRATING.md`.
+- New `urls` check, on when `migration.oldUrls` is set: every old URL needs a page, a file or a
+  `_redirects` rule.
+- A flag that wraps a block element (a list, `<div>`, paragraph…) stops the build with an explanation,
+  instead of failing the html check later with `element-permitted-content`.
+- Built stylesheets lose their comments (licence comments stay; `stripCssComments: false` keeps them).
+  If a site strips comments in its own `eleventy.after` hook, that hook can go.
+- Readability messages give rem as well as px when the root size isn't 16px.
+- `doctor` reports uncommitted `.claude/settings.json` changes as a temporary unlock that must not be
+  committed; `/send-for-review` leaves that file out of commits.
+- Guidance: flags are inline, the 16px minimum includes small labels, `site-kit test` builds into a
+  temporary folder, and site tests guard settled decisions.
+- After upgrading, run `npx --no site-kit sync` to update the managed files.
+
 ## 1.0.1
 
 - Flag notes are tooltips: flagged text flows normally, and the note appears on hover, keyboard focus or tap (local previews only; hidden builds are unchanged).

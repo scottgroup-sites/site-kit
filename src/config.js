@@ -2,11 +2,11 @@ import { existsSync } from "node:fs";
 import { join } from "node:path";
 import { pathToFileURL } from "node:url";
 
-export const CHECK_IDS = ["a11y", "html", "links", "structure", "consistency", "performance", "hosts", "csp", "readability", "sitemap", "sensitive-fields"];
+export const CHECK_IDS = ["a11y", "html", "links", "structure", "consistency", "performance", "hosts", "csp", "readability", "sitemap", "sensitive-fields", "urls"];
 export const HOST_TYPES = ["script", "stylesheet", "iframe", "img", "form"];
 export const DEFAULT_BUDGETS = { htmlPerPage: "60 KB", pageTotal: "1200 KB", imageFile: "300 KB", cssTotal: "40 KB", jsTotal: "30 KB" };
-const KNOWN_KEYS = ["site", "productionBranch", "previewPort", "claude", "flags", "footer", "fonts", "allowedHosts", "budgets", "sitemap", "htmlValidate", "exceptions"];
-const SECTION_KEYS = { site: ["url"], claude: ["care"], flags: ["production"], footer: ["text", "links"], sitemap: ["exclude"] };
+const KNOWN_KEYS = ["site", "productionBranch", "previewPort", "claude", "flags", "footer", "fonts", "allowedHosts", "budgets", "sitemap", "htmlValidate", "exceptions", "migration"];
+const SECTION_KEYS = { site: ["url"], claude: ["care"], flags: ["production"], footer: ["text", "links"], sitemap: ["exclude"], migration: ["oldUrls"] };
 
 export class ConfigError extends Error {}
 
@@ -79,6 +79,9 @@ export function validateConfig(raw) {
   const exclude = raw.sitemap?.exclude ?? [];
   if (!Array.isArray(exclude) || exclude.some((p) => typeof p !== "string" || !p.startsWith("/"))) problems.push('sitemap.exclude must be a list of paths like "/thank-you/".');
 
+  const oldUrls = raw.migration?.oldUrls ?? null;
+  if (oldUrls !== null && (typeof oldUrls !== "string" || !oldUrls || oldUrls.startsWith("/") || oldUrls.includes(".."))) problems.push('migration.oldUrls must be a path inside the repo, like "migration/old-urls.txt".');
+
   const htmlValidate = raw.htmlValidate ?? [];
   if (!Array.isArray(htmlValidate)) problems.push("htmlValidate must be a list of rule changes.");
   else htmlValidate.forEach((r, i) => {
@@ -110,6 +113,7 @@ export function validateConfig(raw) {
       budgets,
       budgetLabels,
       sitemap: { exclude },
+      migration: { oldUrls },
       htmlValidate,
       exceptions,
     },

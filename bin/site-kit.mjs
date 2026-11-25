@@ -7,6 +7,8 @@ import { loadConfig } from "../src/config.js";
 import { syncFiles } from "../src/commands/sync.js";
 import { runHook } from "../src/commands/hook.js";
 import { runDoctor } from "../src/commands/doctor.js";
+import { runInit } from "../src/commands/init.js";
+import { runCompare, runScan } from "../src/commands/migrate.js";
 
 const [command, ...args] = process.argv.slice(2);
 const root = process.cwd();
@@ -18,7 +20,20 @@ const USAGE = `Usage: site-kit <command>
   add-photo <file> <name>    Prepare a photo for the site
   sync [--check]             Update the files site-kit manages in this repo
   doctor                     Report this site's status
-  hook                       Claude Code Stop hook (reads JSON on stdin)`;
+  hook                       Claude Code Stop hook (reads JSON on stdin)
+
+Moving an existing static site onto site-kit (developer):
+  init [--url <https://…>] [--care] [--port <n>] [--name <site name>]
+                             Record the old site, then scaffold Eleventy and site-kit
+  migrate scan [--from <dir>]
+                             Write MIGRATION.md and migration/old-urls.txt from the old pages
+  migrate compare [--from <dir>]
+                             List old text missing from the new pages`;
+
+const option = (name) => {
+  const i = args.indexOf(`--${name}`);
+  return i === -1 ? undefined : args[i + 1];
+};
 
 const commands = {
   async test() {
@@ -53,6 +68,28 @@ const commands = {
     const { lines, code } = await runDoctor({ root });
     for (const l of lines) console.log(`${l.level.padEnd(5)} ${l.text}`);
     return code;
+  },
+  async init() {
+    const port = option("port");
+    const r = await runInit({ root, url: option("url"), care: args.includes("--care"), port: port === undefined ? 8080 : Number(port), name: option("name") });
+    for (const l of r.lines) (r.ok ? console.log : console.error)(l);
+    return r.ok ? 0 : 1;
+  },
+  async migrate() {
+    const [sub] = args;
+    const from = option("from");
+    if (sub === "scan") {
+      const r = runScan({ root, from });
+      (r.ok ? console.log : console.error)(r.message);
+      return r.ok ? 0 : 1;
+    }
+    if (sub === "compare") {
+      const r = await runCompare({ root, from });
+      (r.ok ? console.log : console.error)(r.message);
+      return r.ok ? 0 : 1;
+    }
+    console.error("Usage: site-kit migrate scan|compare [--from <dir>]");
+    return 1;
   },
   async hook() {
     let stdin = "";

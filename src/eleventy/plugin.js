@@ -4,6 +4,7 @@ import { fileURLToPath } from "node:url";
 import { validateConfig } from "../config.js";
 import { flagMode } from "../review/mode.js";
 import { renderFlag, renderPhoto } from "../review/render.js";
+import { stripBuiltCss } from "./css.js";
 import { createReview, formatReview, assertLaunchReady, assertNoPlaceholders } from "../review/collect.js";
 
 const CSS_SOURCE = fileURLToPath(new URL("./review.css", import.meta.url));
@@ -14,6 +15,9 @@ export default function siteKit(eleventyConfig, options = {}) {
   const mode = flagMode(process.env, config);
   const placeholders = options.placeholders ?? [];
   const titleSuffix = options.titleSuffix ?? "";
+  // Built stylesheets drop their comments, which explain the design in the source but count
+  // against the CSS budget. Pass stripCssComments: false to keep them.
+  const stripCss = options.stripCssComments ?? true;
   const review = createReview();
 
   eleventyConfig.addGlobalData("siteKit", { flagMode: mode });
@@ -51,6 +55,7 @@ export default function siteKit(eleventyConfig, options = {}) {
     const target = join(directories.output, "assets", "site-kit", "review.css");
     await mkdir(dirname(target), { recursive: true });
     await copyFile(CSS_SOURCE, target);
+    if (stripCss) await stripBuiltCss(directories.output);
     if (runMode !== "build" || mode === "hide") return;
     await writeFile(join(process.cwd(), "CONTENT-REVIEW.md"), formatReview(review.items));
     if (mode !== "fail") return;

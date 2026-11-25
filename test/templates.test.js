@@ -4,7 +4,7 @@ import { readFileSync, readdirSync, statSync } from "node:fs";
 import { join } from "node:path";
 import { KIT_ROOT } from "./helpers.js";
 
-const files = ["CLAUDE.base.md", "CLAUDE.care.md", "README.md", "CHANGELOG.md", ...(function walk(dir) {
+const files = ["CLAUDE.base.md", "CLAUDE.care.md", "README.md", "CHANGELOG.md", "MIGRATING.md", ...(function walk(dir) {
   return readdirSync(join(KIT_ROOT, dir)).flatMap((n) => statSync(join(KIT_ROOT, dir, n)).isDirectory() ? walk(join(dir, n)) : [join(dir, n)]);
 })("templates")].filter((f) => { try { statSync(join(KIT_ROOT, f)); return true; } catch { return false; } });
 
@@ -37,8 +37,13 @@ test("guidance covers photo rights, npm 10 and real preview links", () => {
   const base = readFileSync(join(KIT_ROOT, "CLAUDE.base.md"), "utf8");
   assert.match(base, /right to use/);
   assert.match(base, /npm@10/);
+  assert.match(base, /flag is inline text/);
+  assert.match(base, /0\.889rem/);
+  assert.match(base, /temporary folder/);
+  assert.match(base, /Never commit `\.claude\/settings\.json`/);
   const skill = readFileSync(join(KIT_ROOT, "templates", "skills", "send-for-review", "SKILL.md"), "utf8");
   assert.match(skill, /gh pr view --comments/);
   assert.match(skill, /dash\.cloudflare\.com/);
   assert.match(skill, /gh pr checks --watch/);
+  assert.match(skill, /Never commit\s+`\.claude\/settings\.json`/);
 });

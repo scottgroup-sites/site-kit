@@ -1,7 +1,7 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
 import { execFileSync } from "node:child_process";
-import { writeFileSync } from "node:fs";
+import { readFileSync, writeFileSync } from "node:fs";
 import { join } from "node:path";
 import { runDoctor, compareVersions, newestDecision, decisionAge } from "../src/commands/doctor.js";
 import { syncFiles, KIT_VERSION } from "../src/commands/sync.js";
@@ -57,4 +57,21 @@ test("a corrupt package-lock.json warns instead of crashing", async () => {
   const text = lines.map((l) => `${l.level} ${l.text}`).join("\n");
   assert.match(text, /^WARN +package-lock\.json can't be read/m);
   assert.match(text, /^WARN +No SITE\.md|^OK +SITE\.md/m);
+});
+
+test("doctor reports a temporary unlock in .claude/settings.json instead of calling it drift", async () => {
+  const root = copyDemo("doctor-unlock");
+  const { config } = await loadConfig(root);
+  syncFiles(root, config);
+  writeFileSync(join(root, "SITE.md"), "## Decisions\n\n- 2026-11-01: Launched.\n");
+  const g = (...args) => execFileSync("git", ["-c", "user.name=t", "-c", "user.email=t@example.com", ...args], { cwd: root });
+  g("init", "-q");
+  g("add", "-A");
+  g("commit", "-qm", "init");
+  const settings = join(root, ".claude", "settings.json");
+  writeFileSync(settings, readFileSync(settings, "utf8").replace('      "Edit(/tests/**)",\n', ""));
+  const { lines } = await runDoctor({ root, checkLatest: false, now: new Date("2026-11-10") });
+  const text = lines.map((l) => `${l.level} ${l.text}`).join("\n");
+  assert.match(text, /^WARN +\.claude\/settings\.json has uncommitted changes, usually a developer's temporary unlock.*Never commit them/m);
+  assert.match(text, /^OK +Managed files are up to date/m);
 });

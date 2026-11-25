@@ -26,6 +26,8 @@ export function decisionAge(date, now) {
   return days === 1 ? "1 day ago" : `${days} days ago`;
 }
 
+const SETTINGS = ".claude/settings.json";
+
 const git = (root, args) => spawnSync("git", args, { cwd: root, encoding: "utf8" });
 
 export async function runDoctor({ root, checkLatest = true, now = new Date() }) {
@@ -58,8 +60,14 @@ export async function runDoctor({ root, checkLatest = true, now = new Date() }) 
   }
   const { config, warnings } = loaded;
 
+  // A developer unlocks protected files by editing the deny list for a while. That edit must never be
+  // committed (CI's `sync --check` rejects it), and `sync` would undo it, so report it on its own.
+  const unlocked = git(root, ["status", "--porcelain", "--", SETTINGS]);
+  const isUnlocked = unlocked.status === 0 && unlocked.stdout.trim() !== "";
+  if (isUnlocked) add("WARN", `${SETTINGS} has uncommitted changes, usually a developer's temporary unlock of protected files. Never commit them; when that work is done, restore it with \`git checkout -- ${SETTINGS}\``);
+
   try {
-    const drift = syncFiles(root, config, { check: true });
+    const drift = syncFiles(root, config, { check: true }).filter((d) => !(isUnlocked && d.path === SETTINGS));
     if (drift.length) add("WARN", `${drift.length} managed file${drift.length === 1 ? "" : "s"} out of date (${drift.map((d) => d.path).join(", ")}); run \`npx --no site-kit sync\``);
     else add("OK", "Managed files are up to date");
   } catch (err) {
