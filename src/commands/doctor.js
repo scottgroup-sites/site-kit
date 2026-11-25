@@ -62,8 +62,10 @@ export async function runDoctor({ root, checkLatest = true, now = new Date() }) 
 
   // A developer unlocks protected files by editing the deny list for a while. That edit must never be
   // committed (CI's `sync --check` rejects it), and `sync` would undo it, so report it on its own.
+  // Only a change to a committed file counts: a new one ("??" or "A", e.g. right after init) isn't an unlock.
   const unlocked = git(root, ["status", "--porcelain", "--", SETTINGS]);
-  const isUnlocked = unlocked.status === 0 && unlocked.stdout.trim() !== "";
+  const code = unlocked.status === 0 ? unlocked.stdout.slice(0, 2) : "";
+  const isUnlocked = code.trim() !== "" && code !== "??" && !code.startsWith("A");
   if (isUnlocked) add("WARN", `${SETTINGS} has uncommitted changes, usually a developer's temporary unlock of protected files. Never commit them; when that work is done, restore it with \`git checkout -- ${SETTINGS}\``);
 
   try {

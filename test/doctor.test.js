@@ -75,3 +75,17 @@ test("doctor reports a temporary unlock in .claude/settings.json instead of call
   assert.match(text, /^WARN +\.claude\/settings\.json has uncommitted changes, usually a developer's temporary unlock.*Never commit them/m);
   assert.match(text, /^OK +Managed files are up to date/m);
 });
+
+test("doctor doesn't call a new, never-committed .claude/settings.json an unlock", async () => {
+  const root = copyDemo("doctor-new-settings");
+  const { config } = await loadConfig(root);
+  syncFiles(root, config);
+  writeFileSync(join(root, "SITE.md"), "## Decisions\n\n- 2026-11-01: Launched.\n");
+  execFileSync("git", ["init", "-q"], { cwd: root });
+  const { lines } = await runDoctor({ root, checkLatest: false, now: new Date("2026-11-10") });
+  const text = lines.map((l) => `${l.level} ${l.text}`).join("\n");
+  assert.doesNotMatch(text, /temporary unlock/);
+  execFileSync("git", ["add", "-A"], { cwd: root });
+  const staged = await runDoctor({ root, checkLatest: false, now: new Date("2026-11-10") });
+  assert.doesNotMatch(staged.lines.map((l) => l.text).join("\n"), /temporary unlock/);
+});
